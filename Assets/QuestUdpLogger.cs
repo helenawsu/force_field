@@ -16,6 +16,7 @@ public class QuestOscLogger : MonoBehaviour
 
     void Start()
     {
+        Debug.Log("[QuestOscStreamer] Start() called");
         // Create and configure the extOSC transmitter
         _transmitter = gameObject.AddComponent<OSCTransmitter>();
         _transmitter.RemoteHost = remoteHost;
@@ -33,6 +34,6 @@ public class QuestOscLogger : MonoBehaviour
         // Send it off via extOSC
         _transmitter.Send(message);
         
-        Debug.Log($"[extOSC] Sent /cube/height {cube.position.y:F3}");
+        Debug.Log($"[extOSC] udb logger Sent /cube/height {cube.position.y:F3}");
     }
 }
