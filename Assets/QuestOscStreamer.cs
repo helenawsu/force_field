@@ -39,19 +39,33 @@ public class dOscStreamer : MonoBehaviour
 
     // Called by LeaveOnlyHandler when hand stops touching cube
     internal void SendLeaveEvent(int cubeId, float height)
-    {
-        // Enforce cooldown
-        if (Time.time - _lastSendTime < sendCooldown)
-            return;
+{
+    // cooldown
+    if (Time.time - _lastSendTime < sendCooldown) return;
+    _lastSendTime = Time.time;
 
-        _lastSendTime = Time.time;
+    // 1) find the cube’s position
+    Vector3 pos = forceField.bodies[cubeId].position;
 
-        var msg = new OSCMessage("/cube/leave");
-        msg.AddValue(OSCValue.Int(cubeId));
-        msg.AddValue(OSCValue.Float(height));
-        _transmitter.Send(msg);
-        Debug.Log($"[extOSC] Sent /cube/leave id={cubeId} y={height:F3}");
-    }
+    // 2) sample div & curl
+    float div      = forceField.SampleDivergence(pos);
+    Vector3 curl   = forceField.SampleCurl(pos);
+
+    // 3) build and send OSC
+    var msg = new OSCMessage("/cube/leave");
+    msg.AddValue(OSCValue.Int  (cubeId));
+    msg.AddValue(OSCValue.Float(height));
+    msg.AddValue(OSCValue.Float(div));
+    msg.AddValue(OSCValue.Float(curl.x));
+    msg.AddValue(OSCValue.Float(curl.y));
+    msg.AddValue(OSCValue.Float(curl.z));
+
+    _transmitter.Send(msg);
+    Debug.Log(
+      $"[extOSC] /cube/leave  id={cubeId}  y={height:F3}  div={div:F3}  curl=({curl.x:F3},{curl.y:F3},{curl.z:F3})"
+    );
+}
+
 
     // ---------------------------------
     // Component that only fires on exit
