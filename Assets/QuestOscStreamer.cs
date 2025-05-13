@@ -1,6 +1,6 @@
 using UnityEngine;
 using extOSC;
-using Oculus.Interaction.HandGrab;   // for HandGrabInteractor
+using Oculus.Interaction.HandGrab;
 
 [RequireComponent(typeof(OSCTransmitter))]
 public class dOscStreamer : MonoBehaviour
@@ -14,12 +14,17 @@ public class dOscStreamer : MonoBehaviour
     [Tooltip("Port matching your listener")]
     public int    remotePort = 7400;
 
+    [Header("Cooldown")]
+    [Tooltip("Minimum seconds between OSC sends")]
+    public float sendCooldown = 0.5f;
+
     private OSCTransmitter _transmitter;
+    private float _lastSendTime = -Mathf.Infinity;
 
     void Start()
     {
         // 1) Set up OSC
-        _transmitter = gameObject.AddComponent<OSCTransmitter>();
+        _transmitter = gameObject.GetComponent<OSCTransmitter>();
         _transmitter.RemoteHost = remoteHost;
         _transmitter.RemotePort = remotePort;
 
@@ -35,6 +40,12 @@ public class dOscStreamer : MonoBehaviour
     // Called by LeaveOnlyHandler when hand stops touching cube
     internal void SendLeaveEvent(int cubeId, float height)
     {
+        // Enforce cooldown
+        if (Time.time - _lastSendTime < sendCooldown)
+            return;
+
+        _lastSendTime = Time.time;
+
         var msg = new OSCMessage("/cube/leave");
         msg.AddValue(OSCValue.Int(cubeId));
         msg.AddValue(OSCValue.Float(height));
@@ -49,7 +60,7 @@ public class dOscStreamer : MonoBehaviour
     {
         int               _id;
         Rigidbody         _rb;
-        dOscStreamer     _parent;
+        dOscStreamer      _parent;
 
         public void Init(int id, Rigidbody rb, dOscStreamer parent)
         {
