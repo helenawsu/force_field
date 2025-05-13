@@ -63,7 +63,7 @@ public class dOscStreamer : MonoBehaviour
 
     _transmitter.Send(msg);
     Debug.Log(
-      $"[extOSC] /cube/leave  id={cubeId}  y={height:F3}  div={div:F3}  curl=({curl.x:F3},{curl.y:F3},{curl.z:F3})"
+      $"[extOSC] /cube/leave  id={cubeId}  y={mag:F3}  div={div:F3}  curl=({curl.x:F3},{curl.y:F3},{curl.z:F3})"
     );
 }
 

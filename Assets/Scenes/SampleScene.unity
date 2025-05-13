@@ -534,12 +534,12 @@ MonoBehaviour:
   geometricPrefab: {fileID: 1672116091}
   count: 42
   spawnRadius: 1
-  noiseScale: 0.3
+  noiseScale: 0.5
   curlStrength: 5
   curlEpsilon: 0.1
   damping: 0.95
   bodies: []
-  divergenceNoiseScale: 5
+  divergenceNoiseScale: 8
   divergenceStrength: 0.3
 --- !u!4 &27663702
 Transform:
@@ -15955,7 +15955,7 @@ MonoBehaviour:
   forceField: {fileID: 27663701}
   remoteHost: 192.168.4.26
   remotePort: 7400
-  sendCooldown: 0.5
+  sendCooldown: 2
 --- !u!4 &1502775356
 Transform:
   m_ObjectHideFlags: 0
