@@ -20,7 +20,9 @@ public class ForceField : MonoBehaviour
 
     private Transform userCam;
     public Rigidbody[] bodies;
-
+    public float divergenceNoiseScale = 0.5f;
+    [Tooltip("Overall strength of this added divergence")]
+    public float divergenceStrength   = 1f;
     public float  SampleDivergence(Vector3 p) => Divergence(p);
     public Vector3 SampleCurl     (Vector3 p) => Curl(p);
 
@@ -44,23 +46,32 @@ var go = Instantiate(
             bodies[i]     = rb;
         }
     }
+void FixedUpdate()
+{
+    Vector3 center = userCam.position;
 
-    void FixedUpdate()
+    foreach (var rb in bodies)
     {
-        Vector3 center = userCam.position;
-        foreach (var rb in bodies)
-        {
-            // 1) sample the curl‐noise field
-            Vector3 F = ForceFieldFunction(rb.position);
-            rb.AddForce(F, ForceMode.Acceleration);
-Vector3 toCenter = (center - rb.position);
+        // 1) sample the curl‐noise field
+        Vector3 F = ForceFieldFunction(rb.position);
+
+        // 2) attraction to center
+        Vector3 toCenter = (center - rb.position);
         F += toCenter * 1.0f;    // the “1.0f” is your attraction strength
 
+        // apply forces
         rb.AddForce(F, ForceMode.Acceleration);
-            // 2) gentle damping
-            rb.linearVelocity *= damping;
-        }
+
+        // 3) gentle damping
+        rb.linearVelocity *= damping;
+
+        // 4) compute & print divergence & curl
+        float div  = SampleDivergence(rb.position);
+        Vector3 curl = SampleCurl(rb.position);
+        Debug.Log($"Div = {div:F4}   |   Curl = ({curl.x:F4}, {curl.y:F4}, {curl.z:F4})   |   |Curl| = {curl.magnitude:F4}");
     }
+}
+
 
     // —————————————————————————
     // Actual force‐field definition
@@ -82,7 +93,16 @@ Vector3 toCenter = (center - rb.position);
             p
         );
 
-        return curl * curlStrength;
+        // Vector3 baseF = ForceFieldFunction(p);
+
+        // B) add a little divergence: sample Perlin in 1D for a scalar noise
+        float dNoise = (Mathf.PerlinNoise(p.x * divergenceNoiseScale, p.y * divergenceNoiseScale)
+                      - 0.5f) * 2f;  // in range [-1,1]
+
+        // radial direction
+        Vector3 radial = (p - userCam.position).normalized;
+
+        return curl * curlStrength + radial * dNoise * divergenceStrength;
     }
 
     // used by Divergence & Curl below

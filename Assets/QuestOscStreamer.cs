@@ -38,7 +38,7 @@ public class dOscStreamer : MonoBehaviour
     }
 
     // Called by LeaveOnlyHandler when hand stops touching cube
-    internal void SendLeaveEvent(int cubeId, float height)
+    internal void SendLeaveEvent(int cubeId, float mag)
 {
     // cooldown
     if (Time.time - _lastSendTime < sendCooldown) return;
@@ -54,8 +54,9 @@ public class dOscStreamer : MonoBehaviour
     // 3) build and send OSC
     var msg = new OSCMessage("/cube/leave");
     msg.AddValue(OSCValue.Int  (cubeId));
-    msg.AddValue(OSCValue.Float(height));
+    msg.AddValue(OSCValue.Float(mag));
     msg.AddValue(OSCValue.Float(div));
+    msg.AddValue(OSCValue.Float(curl.magnitude));
     msg.AddValue(OSCValue.Float(curl.x));
     msg.AddValue(OSCValue.Float(curl.y));
     msg.AddValue(OSCValue.Float(curl.z));
@@ -88,8 +89,8 @@ public class dOscStreamer : MonoBehaviour
             // detect any of the auto-generated hand colliders
             if (other.GetComponentInParent<HandGrabInteractor>() != null)
             {
-                float y = _rb.position.y;
-                _parent.SendLeaveEvent(_id, y);
+                float mag = _rb.position.magnitude;
+                _parent.SendLeaveEvent(_id, mag);
             }
         }
     }
