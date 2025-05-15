@@ -7,4 +7,11 @@
 To explore abstract mappings between musical structure and physical properties in an interactive VR installation.
 
 ## Description
-Floating cubes, driven by curl- and gradient-based noise, mirror the swirling motifs and tension of string instruments. Each cube represents a single instrument and plays its audio sample only when the user touches it—transforming the force field itself into an instrument. The fourth movement of Dvořák’s *New World Symphony* is selected as the audio source.
+Floating cubes, driven by curl and gradient based noise, mirror the swirling motifs and tension of symphony. Each cube represents a single instrument and plays its audio sample only when you touch it—transforming the force field itself into an instrument. You can grab a cube and move it elsewhere in the field; its new position then modulates playback parameters (e.g. rate, duration, offset), offering an immersive, interactive soundscape. The fourth movement of Dvořák’s *New World Symphony* is selected as the audio source.
+
+
+
+
+
+
+
